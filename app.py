@@ -161,6 +161,10 @@ def create_app():
         """Serve files from the storage directory"""
         return send_from_directory(LOCAL_STORAGE_PATH, filename)
 
+    @app.route('/')
+    def index():
+        return "Application is running!"
+
     return app
 
 app = create_app()
