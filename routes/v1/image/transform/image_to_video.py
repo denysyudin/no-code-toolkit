@@ -23,7 +23,7 @@ logger = logging.getLogger(__name__)
     "required": ["image_url"],
     "additionalProperties": False
 })
-@queue_task_wrapper(bypass_queue=False)
+@queue_task_wrapper(bypass_queue=True)
 def image_to_video(job_id, data):
     image_url = data.get('image_url')
     length = data.get('length', 5)
