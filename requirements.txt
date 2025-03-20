@@ -11,3 +11,4 @@ torch
 psutil
 Pillow
 matplotlib
+moviepy

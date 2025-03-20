@@ -1,3 +1,8 @@
 .env_variables.json
 .DS_Store
 .env_shell.json
+
+__pycache__/
+/venv
+routes/__pycache__/
+services/__pycache__/

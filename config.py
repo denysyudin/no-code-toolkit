@@ -2,8 +2,8 @@ import os
 
 # Retrieve the API key from environment variables
 API_KEY = os.environ.get('API_KEY')
-if not API_KEY:
-    raise ValueError("API_KEY environment variable is not set")
+# if not API_KEY:
+#     raise ValueError("API_KEY environment variable is not set")
 
 # Local storage configuration
 LOCAL_STORAGE_PATH = os.environ.get('LOCAL_STORAGE_PATH', '/var/www/storage')
