@@ -164,16 +164,28 @@ def process_transcription(video_path: str, transcribe: List[Dict[str, Any]],
     # Word replacements dictionary for censoring
     replacements = {item['find']: item['replace'] for item in replace_words}
 
-    # Process each transcription item
+    # Get the maximum words per line from settings
+    max_words_per_line = settings.get('max_words_per_line', 1)
+    logger.info(f"Job {job_id}: Using max_words_per_line={max_words_per_line}")
+    
+    # Process transcription in batches according to max_words_per_line
+    i = 0
     previous_end_time = 0
     
-    for i, word_data in enumerate(transcribe):
-        logger.debug(f"Job {job_id}: Processing word {i+1}/{len(transcribe)}")
-        start_time = word_data['start']
-        end_time = word_data['end']
+    while i < len(transcribe):
+        # Determine the batch size (not exceeding the end of the transcription)
+        batch_size = min(max_words_per_line, len(transcribe) - i)
+        batch = transcribe[i:i+batch_size]
+        
+        # Get the start time from the first word and end time from the last word in the batch
+        start_time = batch[0]['start']
+        end_time = batch[-1]['end']
+        
+        logger.debug(f"Job {job_id}: Processing batch of {batch_size} words from index {i}")
         
         # Skip invalid time ranges
         if end_time < start_time or start_time < 0 or end_time > video.duration:
+            i += batch_size
             continue
         
         # Check if there's a gap between previous word and current word
@@ -185,17 +197,25 @@ def process_transcription(video_path: str, transcribe: List[Dict[str, Any]],
 
         # Update previous_end_time for the next iteration
         previous_end_time = end_time
-            
-        # Get word, applying replacements if needed
-        display_word = word_data['word']
         
-        for find, replace in replacements.items():
-            if find.lower() in display_word.lower():
-                display_word = replace
-                
+        # Process all words in the batch
+        display_text = ""
+        for word_data in batch:
+            # Get word, applying replacements if needed
+            display_word = word_data['word']
+            
+            for find, replace in replacements.items():
+                if find.lower() in display_word.lower():
+                    display_word = replace
+            
+            # Add space between words
+            if display_text:
+                display_text += " "
+            display_text += display_word
+        
         # Apply text formatting from settings
         if settings.get('all_caps', False):
-            display_word = display_word.upper()
+            display_text = display_text.upper()
         
         word_clip = video.subclipped(start_time, end_time)
         
@@ -240,7 +260,7 @@ def process_transcription(video_path: str, transcribe: List[Dict[str, Any]],
             horizontal_position = 'center'
 
         txt_clip = TextClip(
-            text=display_word,  # Changed from txt to text
+            text=display_text,
             font=font_path,
             font_size=settings.get('font_size', 24),
             color=settings.get('word_color', 'white'),
@@ -249,7 +269,7 @@ def process_transcription(video_path: str, transcribe: List[Dict[str, Any]],
             duration=end_time - start_time,
             vertical_align=vertical_position,
             horizontal_align=horizontal_position,
-            text_align='center',
+            text_align=settings.get('alignment', 'center'),
             method='caption',
             size=(video.w, video.h)
         )
@@ -257,6 +277,9 @@ def process_transcription(video_path: str, transcribe: List[Dict[str, Any]],
         # Combine video and text
         composite = CompositeVideoClip([word_clip, txt_clip])
         clips.append(composite)
+        
+        # Move to the next batch
+        i += batch_size
     
     # Add remaining video after the last transcription entry if it exists
     if previous_end_time < video.duration:
