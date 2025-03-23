@@ -114,7 +114,7 @@ def create_app():
     from routes.transcribe_media import transcribe_bp
     from routes.combine_videos import combine_bp
     from routes.audio_mixing import audio_mixing_bp
-    from routes.gdrive_upload import gdrive_upload_bp
+    # from routes.gdrive_upload import gdrive_upload_bp
     from routes.authenticate import auth_bp
     from routes.caption_video import caption_bp 
     from routes.extract_keyframes import extract_keyframes_bp
@@ -126,7 +126,7 @@ def create_app():
     app.register_blueprint(transcribe_bp)
     app.register_blueprint(combine_bp)
     app.register_blueprint(audio_mixing_bp)
-    app.register_blueprint(gdrive_upload_bp)
+    # app.register_blueprint(gdrive_upload_bp)
     app.register_blueprint(auth_bp)
     app.register_blueprint(caption_bp)
     app.register_blueprint(extract_keyframes_bp)

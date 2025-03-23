@@ -17,10 +17,10 @@ FONTS_DIR = '/usr/share/fonts/custom'
 
 # Create the FONT_PATHS dictionary by reading the fonts directory
 FONT_PATHS = {}
-for font_file in os.listdir(FONTS_DIR):
-    if font_file.endswith('.ttf') or font_file.endswith('.TTF'):
-        font_name = os.path.splitext(font_file)[0]
-        FONT_PATHS[font_name] = os.path.join(FONTS_DIR, font_file)
+# for font_file in os.listdir(FONTS_DIR):
+#     if font_file.endswith('.ttf') or font_file.endswith('.TTF'):
+#         font_name = os.path.splitext(font_file)[0]
+#         FONT_PATHS[font_name] = os.path.join(FONTS_DIR, font_file)
 # logger.info(f"Available fonts: {FONT_PATHS}")
 
 # Create a list of acceptable font names

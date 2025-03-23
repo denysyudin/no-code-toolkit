@@ -10,7 +10,7 @@ caption_bp = Blueprint('caption', __name__)
 logger = logging.getLogger(__name__)
 
 @caption_bp.route('/caption-video', methods=['POST'])
-@authenticate
+# @authenticate
 @validate_payload({
     "type": "object",
     "properties": {
